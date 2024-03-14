@@ -1,0 +1,63 @@
+Started the round 1
+Street "preflop" started. (community card = [])
+valid actions:  [{'action': 'fold', 'amount': 0}, {'action': 'call', 'amount': 10}, {'action': 'raise', 'amount': {'min': 15, 'max': 100}}]
+hole card:  ['HA', 'C8']
+{'action_histories': {'preflop': [{'action': 'SMALLBLIND',
+                                   'add_amount': 5,
+                                   'amount': 5,
+                                   'uuid': 'pddliqyhzgjefgygrnxcof'},
+                                  {'action': 'BIGBLIND',
+                                   'add_amount': 5,
+                                   'amount': 10,
+                                   'uuid': 'srajihekbchrlgwgrvtetl'}]},
+ 'big_blind_pos': 0,
+ 'community_card': [],
+ 'dealer_btn': 0,
+ 'next_player': 1,
+ 'pot': {'main': {'amount': 15}, 'side': []},
+ 'round_count': 1,
+ 'seats': [{'name': 'fish player 1',
+            'stack': 90,
+            'state': 'participating',
+            'uuid': 'srajihekbchrlgwgrvtetl'},
+           {'name': 'fish player 2',
+            'stack': 95,
+            'state': 'participating',
+            'uuid': 'pddliqyhzgjefgygrnxcof'}],
+ 'small_blind_amount': 5,
+ 'small_blind_pos': 1,
+ 'street': 'preflop'}
+"fish player 2" declared "call:10"
+START NEW ROUND
+valid actions:  [{'action': 'fold', 'amount': 0}, {'action': 'call', 'amount': 10}, {'action': 'raise', 'amount': {'min': 15, 'max': 100}}]
+hole card:  ['DJ', 'S9']
+{'action_histories': {'preflop': [{'action': 'SMALLBLIND',
+                                   'add_amount': 5,
+                                   'amount': 5,
+                                   'uuid': 'pddliqyhzgjefgygrnxcof'},
+                                  {'action': 'BIGBLIND',
+                                   'add_amount': 5,
+                                   'amount': 10,
+                                   'uuid': 'srajihekbchrlgwgrvtetl'},
+                                  {'action': 'CALL',
+                                   'amount': 10,
+                                   'paid': 5,
+                                   'uuid': 'pddliqyhzgjefgygrnxcof'}]},
+ 'big_blind_pos': 0,
+ 'community_card': [],
+ 'dealer_btn': 0,
+ 'next_player': 0,
+ 'pot': {'main': {'amount': 20}, 'side': []},
+ 'round_count': 1,
+ 'seats': [{'name': 'fish player 1',
+            'stack': 90,
+            'state': 'participating',
+            'uuid': 'srajihekbchrlgwgrvtetl'},
+           {'name': 'fish player 2',
+            'stack': 90,
+            'state': 'participating',
+            'uuid': 'pddliqyhzgjefgygrnxcof'}],
+ 'small_blind_amount': 5,
+ 'small_blind_pos': 1,
+ 'street': 'preflop'}
+Game State matrix:

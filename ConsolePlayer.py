@@ -1,5 +1,6 @@
 import pypokerengine.utils.visualize_utils as U
 from pypokerengine.players import BasePokerPlayer
+import pprint as pp
 
 class ConsolePlayer(BasePokerPlayer):
 
@@ -7,6 +8,7 @@ class ConsolePlayer(BasePokerPlayer):
     self.input_receiver = input_receiver if input_receiver else self.__gen_raw_input_wrapper()
 
   def declare_action(self, valid_actions, hole_card, round_state):
+    pp.pprint(round_state)
     print(U.visualize_declare_action(valid_actions, hole_card, round_state, self.uuid))
     action, amount = self.__receive_action_from_console(valid_actions)
     return action, amount
