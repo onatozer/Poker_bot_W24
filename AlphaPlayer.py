@@ -7,6 +7,8 @@ class AlphaPlayer(BasePokerPlayer):
         super().__init__()
         self.card_state = np.zeros((6, 17, 17))
         self.hole_card_updated = False
+        self.encodings = np.zeros((24,4,9))
+        self.encodings_zero_pad = np.zeros((24,13,13))
 
     #  we define the logic to make an action through this method. (so this method would be the core of your AI)
     def declare_action(self, valid_actions, hole_card, round_state):
@@ -16,12 +18,17 @@ class AlphaPlayer(BasePokerPlayer):
         print('hole card: ', hole_card)
         pp.pprint(round_state)
         print("Game State matrix:")
-        self.encode_game(valid_actions,round_state)
+        encodings_zero_pad = self.encode_game(valid_actions,round_state)
+
+
+
+
 
 
         print("Card state representation:")
         self.update_card_state(hole_card, round_state)
         self.print_card_state()
+
 
         call_action_info = valid_actions[1]
         action, amount = call_action_info["action"], call_action_info["amount"]
@@ -95,7 +102,7 @@ class AlphaPlayer(BasePokerPlayer):
     ##code to represent game state information as matrix
     def encode_game(self, valid_actions,round_state):
         currPot=round_state['pot']['main']['amount']
-        encodings=np.zeros((4,9))
+        #encodings=np.zeros((4,9))
         currPlayer=None
         if(round_state["next_player"]==1):
             currPlayer=0
@@ -113,54 +120,95 @@ class AlphaPlayer(BasePokerPlayer):
 
         print("Action histories")
         ##NOTE: Not the most efficient way to implement this functionality, don't care right now
-        for action in round_state['action_histories']:
-            print(round_state['action_histories'][action])
-            #small blind is coutned as betting the full pot in the paper
-            if(round_state['action_histories'][action] == "SMALLBLIND"):
-                encodings[currPlayer][4] = 1
+        for pftr in round_state['action_histories']:
+            if(pftr == "preflop"):
+                matrix_index = 0
 
-            #big blind would then, by definition, be betting double the current pot :-)
-            if(round_state['action_histories'][action] == "BIGBLIND"):
-                encodings[currPlayer][7] = 1
+            if(pftr == "flop"):
+                matrix_index = 6
+
+            if(pftr == "turn"):
+                matrix_index = 12
+
+            if(pftr == "river"):
+                matrix_index = 18
             
-            if(round_state['action_histories'][action] == "FOLD"):
-                encodings[currPlayer][0] = 1
-            
-            #This is a check
-            if(round_state['action_histories'][action] == "CALL" and round_state['amount'][action] == 0):
-                encodings[currPlayer][1] = 1
+            for action in pftr:
+                print(round_state['action_histories'][pftr])
+                #small blind is coutned as betting the full pot in the paper
+                #9 actions
+                #all in
+                if round_state['action_histories'][action] == "RAISE" and round_state['amount'][action] == curr_plyer_ammt:
+                    self.encodings[matrix_index][currPlayer][8] += 1
+                
+                #big blind would then, by definition, be betting double the current pot :-)
+                if(round_state['action_histories'][action] == "BIGBLIND"):
+                    self.encodings[matrix_index][currPlayer][7] += 1
+                
+                if round_state['action_histories'][action] == "RAISE" and round_state['amount'][action] >= currPot*2:
+                    self.encodings[matrix_index][currPlayer][7] += 1
+                
+                if round_state['action_histories'][action] == "RAISE" and round_state['amount'][action] >= currPot*1.5 and round_state['amount'][action] < currPot*2:
+                    self.encodings[matrix_index][currPlayer][6] += 1
+                    
+                if(round_state['action_histories'][action] == "SMALLBLIND"):
+                    self.encodings[matrix_index][round_state[action]][currPlayer][5] += 1
+                    
+                if round_state['action_histories'][action] == "RAISE" and round_state['amount'][action] >= currPot*1 and round_state['amount'][action] < currPot*1.5:
+                    self.encodings[matrix_index][currPlayer][5] += 1
+                
+                if round_state['action_histories'][action] == "RAISE" and round_state['amount'][action] >= currPot*0.75 and round_state['amount'][action] < currPot*1:
+                    self.encodings[matrix_index][currPlayer][4] += 1
+                
+                if round_state['action_histories'][action] == "RAISE" and round_state['amount'][action] >= currPot*0.5 and round_state['amount'][action] < currPot*0.75:
+                    self.encodings[matrix_index][currPlayer][3] += 1
 
-            
+                #fold
+                if(round_state['action_histories'][action] == "FOLD"):
+                    self.encodings[matrix_index][currPlayer][0] += 1
+                
+                #This is a check
+                if(round_state['action_histories'][action] == "CALL" and round_state['amount'][action] == 0):
+                    self.encodings[matrix_index][currPlayer][1] += 1
 
-            
-    
+                #This is a call
+                if(round_state['action_histories'][action] == "CALL"):
+                    self.encodings[matrix_index][currPlayer][2] += 1
 
-        #encoding for the legal actions player is allowed to take
-        for action in valid_actions:
-            encodings[3][0]=1
-            if(action['action']=="call" and action['amount']==0): #check
-                encodings[3][1]=1
-                encodings[3][2]=0
-            if(action['action']=="call"): #call
-                encodings[3][1]=0
-                if(action['amount'] > curr_plyer_ammt):
-                    encodings[3][2]=0
-            else:
-                encodings[3][2]=1
-            if(ratio>1/2):
-                encodings[3][3]=1
-            if(ratio>3/4):
-                encodings[3][4]=1
-            if(ratio>1):
-                encodings[3][5]=1
-            if(ratio>3/2):
-                encodings[3][6]=1
-            if(ratio>2):
-                encodings[3][7]=1
-            encodings[3][8]=1
+                    
 
-        
-        print(encodings)
+                #add the sum row
+                self.encodings[matrix_index][2] = self.encodings[matrix_index][0] + self.encodings[matrix_index][1]
+
+                #encoding for the legal actions player is allowed to take
+                for action in valid_actions:
+                    self.encodings[matrix_index][3][0]=1
+                    if(action['action']=="call" and action['amount']==0): #check
+                        self.encodings[matrix_index][3][1]=1
+                        self.encodings[matrix_index][3][2]=0
+                    if(action['action']=="call"): #call
+                        self.encodings[matrix_index][3][1]=0
+                        if(action['amount'] > curr_plyer_ammt):
+                            self.encodings[matrix_index][3][2]=0
+                    else:
+                        self.encodings[matrix_index][3][2]=1
+                    if(ratio>1/2):
+                        self.encodings[matrix_index][3][3]=1
+                    if(ratio>3/4):
+                        self.encodings[matrix_index][3][4]=1
+                    if(ratio>1):
+                        self.encodings[matrix_index][3][5]=1
+                    if(ratio>3/2):
+                        self.encodings[matrix_index][3][6]=1
+                    if(ratio>2):
+                        self.encodings[matrix_index][3][7]=1
+                    self.encodings[matrix_index][3][8]=1
+                
+                matrix_index +=1
+        #zero pad encodings to be 24x13x13 matrix for neural network in seperate padded matrix variable
+        #return encodings
+                
+        return np.pad(self.encodings, ((4,5), (2,2)), mode='constant')
     
     
 
