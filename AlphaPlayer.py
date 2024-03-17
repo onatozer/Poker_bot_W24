@@ -9,6 +9,8 @@ class AlphaPlayer(BasePokerPlayer):
         self.hole_card_updated = False
         self.encodings = np.zeros((24,4,9))
         self.encodings_zero_pad = np.zeros((24,13,13))
+        self.own_chips = 0
+        self.opponent_chips = 0
 
     #  we define the logic to make an action through this method. (so this method would be the core of your AI)
     def declare_action(self, valid_actions, hole_card, round_state):
