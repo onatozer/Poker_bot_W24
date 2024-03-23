@@ -8,6 +8,9 @@ def card_model():
   #know input size, filter size came from poker cnn paper
   model.add(layers.Conv2D(filter = (3,3),activation = 'relu', input_shape = (17, 17, 6) kernel_size = (4,4)))
   model.add(layers.MaxPooling2D((2,2)))
+  
+  
+  
   ''''
    model.add(layers.Conv2D(activation = 'relu', input_shape = (17, 17), kernel_size = (4,4)))
 
