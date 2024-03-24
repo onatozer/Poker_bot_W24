@@ -35,4 +35,3 @@ def main():
       'eps_clip': 0.1,
       'hidden_dim': 64
   }
-
