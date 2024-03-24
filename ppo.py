@@ -39,7 +39,7 @@ class PPO:
 		self.act_dim = env.action_space.shape[0]
 
 		 # Initialize actor and critic networks
-		self.actor = policy_class(self.obs_dim, self.act_dim)                                                   # ALG STEP 1
+		self.actor = policy_class(self.obs_dim, self.act_dim)            
 		self.critic = policy_class(self.obs_dim, 1)
 
 		# Initialize optimizers for actor and critic

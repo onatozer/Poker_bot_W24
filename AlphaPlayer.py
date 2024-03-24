@@ -1,14 +1,15 @@
 from pypokerengine.players import BasePokerPlayer
+from Siamese import Siamese
 import pprint as pp
 import numpy as np
 
 class AlphaPlayer(BasePokerPlayer):  
     def __init__(self):
         super().__init__()
-        self.card_state = np.zeros((6, 17, 17))
+        self.card_state = np.zeros((6, 16, 16))
         self.hole_card_updated = False
         self.encodings = np.zeros((24,4,9))
-        self.encodings_zero_pad = np.zeros((24,13,13))
+        self.encodings_zero_pad = np.zeros((24,16,16))
         self.own_chips = 0
         self.opponent_chips = 0
 
@@ -22,18 +23,22 @@ class AlphaPlayer(BasePokerPlayer):
         print("Game State matrix:")
         encodings_zero_pad = self.encode_game(valid_actions,round_state)
 
-
-
+        
 
 
 
         print("Card state representation:")
         self.update_card_state(hole_card, round_state)
+
+
         self.print_card_state()
 
 
         call_action_info = valid_actions[1]
         action, amount = call_action_info["action"], call_action_info["amount"]
+        model = Siamese(output_space=1,hidden_dim=1)
+        model.forward(game_state=self.encodings_zero_pad, card_state=self.card_state)
+        
         return action, amount 
 
     def receive_game_start_message(self, game_info):
@@ -134,8 +139,7 @@ class AlphaPlayer(BasePokerPlayer):
 
             if(pftr == "river"):
                 matrix_index = 18
-            
-            for action in pftr:
+            for action in round_state[pftr]:
                 print(round_state['action_histories'][pftr])
                 #small blind is coutned as betting the full pot in the paper
                 #9 actions
