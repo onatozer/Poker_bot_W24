@@ -85,7 +85,7 @@ class AlphaPlayer(BasePokerPlayer):
         
     def encode_card(self, cards):
         def pad_vector(vec):
-            padded = np.pad(vec, ((6, 7), (2, 2)), mode='constant')
+            padded = np.pad(vec, ((6, 6), (1, 2)), mode='constant', constant_values=0)
             return padded
         suits = {'C': 0,'S':1, 'H':2, 'D':3}
         vals = {'A':12,'K':11, 'Q':10,'J': 9, 'T':8}
@@ -139,49 +139,51 @@ class AlphaPlayer(BasePokerPlayer):
 
             if(pftr == "river"):
                 matrix_index = 18
-            for action in round_state[pftr]:
-                print(round_state['action_histories'][pftr])
+            for action in round_state['action_histories'][pftr]:
+                print(f"action: {action}")
+
+                print(f"how to get action {action['action']}")
+                print(f"how to get amount {action['amount']}")
+
+                # print(round_state['action_histories'][pftr])
                 #small blind is coutned as betting the full pot in the paper
                 #9 actions
                 #all in
-                if round_state['action_histories'][action] == "RAISE" and round_state['amount'][action] == curr_plyer_ammt:
+                if action['action'] == "RAISE" and action['amount'] == curr_plyer_ammt:
                     self.encodings[matrix_index][currPlayer][8] += 1
                 
-                #big blind would then, by definition, be betting double the current pot :-)
-                if(round_state['action_histories'][action] == "BIGBLIND"):
+                if(action['action'] == "BIGBLIND"):
                     self.encodings[matrix_index][currPlayer][7] += 1
-                
-                if round_state['action_histories'][action] == "RAISE" and round_state['amount'][action] >= currPot*2:
+
+                if action['action'] == "RAISE" and    action['amount'] >= currPot*2:
                     self.encodings[matrix_index][currPlayer][7] += 1
-                
-                if round_state['action_histories'][action] == "RAISE" and round_state['amount'][action] >= currPot*1.5 and round_state['amount'][action] < currPot*2:
+
+                if    action['action'] == "RAISE" and    action['amount'] >= currPot*1.5 and    action['amount'] < currPot*2:
                     self.encodings[matrix_index][currPlayer][6] += 1
-                    
-                if(round_state['action_histories'][action] == "SMALLBLIND"):
-                    self.encodings[matrix_index][round_state[action]][currPlayer][5] += 1
-                    
-                if round_state['action_histories'][action] == "RAISE" and round_state['amount'][action] >= currPot*1 and round_state['amount'][action] < currPot*1.5:
+
+                if(action['action'] == "SMALLBLIND"):
                     self.encodings[matrix_index][currPlayer][5] += 1
-                
-                if round_state['action_histories'][action] == "RAISE" and round_state['amount'][action] >= currPot*0.75 and round_state['amount'][action] < currPot*1:
+
+                if    action['action'] == "RAISE" and    action['amount'] >= currPot*1 and    action['amount'] < currPot*1.5:
+                    self.encodings[matrix_index][currPlayer][5] += 1
+
+                if    action['action'] == "RAISE" and    action['amount'] >= currPot*0.75 and    action['amount'] < currPot*1:
                     self.encodings[matrix_index][currPlayer][4] += 1
-                
-                if round_state['action_histories'][action] == "RAISE" and round_state['amount'][action] >= currPot*0.5 and round_state['amount'][action] < currPot*0.75:
+
+                if    action['action'] == "RAISE" and    action['amount'] >= currPot*0.5 and    action['amount'] < currPot*0.75:
                     self.encodings[matrix_index][currPlayer][3] += 1
 
                 #fold
-                if(round_state['action_histories'][action] == "FOLD"):
+                if(action['action'] == "FOLD"):
                     self.encodings[matrix_index][currPlayer][0] += 1
                 
                 #This is a check
-                if(round_state['action_histories'][action] == "CALL" and round_state['amount'][action] == 0):
+                if(action['action'] == "CALL" and action['amount'] == 0):
                     self.encodings[matrix_index][currPlayer][1] += 1
 
                 #This is a call
-                if(round_state['action_histories'][action] == "CALL"):
+                if(action['action'] == "CALL"):
                     self.encodings[matrix_index][currPlayer][2] += 1
-
-                    
 
                 #add the sum row
                 self.encodings[matrix_index][2] = self.encodings[matrix_index][0] + self.encodings[matrix_index][1]
@@ -214,7 +216,14 @@ class AlphaPlayer(BasePokerPlayer):
         #zero pad encodings to be 24x13x13 matrix for neural network in seperate padded matrix variable
         #return encodings
                 
-        return np.pad(self.encodings, ((4,5), (2,2)), mode='constant')
+        # Calculate padding
+        padding = [(0, 0),  # First dimension (24), no padding needed
+                (6, 6),  # Second dimension (4 to 16), pad 6 on each side
+                (3, 4)]  # Third dimension (9 to 16), pad 3 before, 4 after
+
+        # Apply padding
+        return np.pad(self.encodings, pad_width=padding, mode='constant', constant_values=0)
+                 
     
     
 

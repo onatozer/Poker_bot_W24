@@ -34,12 +34,12 @@ class Siamese(nn.Module):
         )
 
         # action net
-        self.action_conv1 = nn.Conv2d(filter_size=3, in_channels=24,
+        self.action_conv1 = nn.Conv2d(in_channels=24,
                                       out_channels=12, kernel_size=(3, 3))
 
         self.action_avg_pool_1 = nn.MaxPool2d(kernel_size=(2, 2))
 
-        self.action_conv2 = nn.Conv2d(filter_size=3, in_channels=12,
+        self.action_conv2 = nn.Conv2d(in_channels=12,
                                       out_channels=32, kernel_size=(3, 3))
         self.action_avg_pool_2 = nn.MaxPool2d(kernel_size=2, stride=1)
 
@@ -56,7 +56,7 @@ class Siamese(nn.Module):
         self.policy_fc2 = nn.Linear(self.hidden_dim, output_space)
 
         self.policy_net = nn.Sequential(
-            self.policy_fc1.
+            self.policy_fc1,
             nn.ReLU(),
             self.policy_fc2,
             nn.Softmax()
@@ -75,8 +75,8 @@ class Siamese(nn.Module):
         self.flatten_action = nn.Flatten(4 * 4 * 32, 1)
 
     def forward(self, card_state, game_state):
-        card_output = self.card_net(card_state.float())
-        game_output = self.action_net(game_state.float())
+        card_output = self.card_net(card_state)
+        game_output = self.action_net(game_state)
 
         flat_card = self.flatten_card(card_output)
         flat_game = self.flatten_action(game_output)
