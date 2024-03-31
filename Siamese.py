@@ -49,6 +49,7 @@ class Siamese(nn.Module):
             self.action_avg_pool_1,
             self.action_conv2,
             nn.Tanh(),
+            self.action_avg_pool_2
         )
 
         # linear layer for policy
@@ -63,24 +64,36 @@ class Siamese(nn.Module):
         )
 
         # linear layer for reward (for value loss)
-        
+
         self.reward_fc1 = nn.Linear(4 * 4 * 32 + 4 * 4 * 16, self.hidden_dim)
         self.reward_fc2 = nn.Linear(self.hidden_dim, 1)
+
         self.reward_fc_net = nn.Sequential(
             self.reward_fc1,
             nn.ReLU(),
             self.reward_fc2
         )
-        self.flatten_card = nn.Flatten(4 * 4 * 16, 1)
-        self.flatten_action = nn.Flatten(4 * 4 * 32, 1)
+        self.flatten_card = nn.Flatten(1210, 1)
+        self.flatten_action = nn.Flatten(6092, 1)
 
     def forward(self, card_state, game_state):
+
+        print((card_state.shape))
+        print("Shape:", card_state.shape)
+        print("Type:", type(card_state))
+        print("Dtype:", card_state.dtype)
+        for param in card_state:
+            print(param.dtype, '-->', param.shape)
+
+        card_state = torch.from_numpy(card_state).float()
+        game_state = torch.from_numpy(game_state).float()
+
         card_output = self.card_net(card_state)
         game_output = self.action_net(game_state)
 
         flat_card = self.flatten_card(card_output)
         flat_game = self.flatten_action(game_output)
-        
+
         concatted_game = torch.cat(flat_card, flat_game)
 
         reward = self.reward_fc_net(concatted_game)

@@ -11,7 +11,7 @@ def main():
     config.register_player(name="fish player 1", algorithm=AlphaPlayer())
     config.register_player(name="fish player 2", algorithm=FishPlayer())
     game_result = start_poker(config, verbose=1)
-    pp.pprint(game_result)
+    # pp.pprint(game_result)
 
 
 if __name__ == "__main__":

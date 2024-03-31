@@ -1,15 +1,15 @@
 Started the round 1
 Street "preflop" started. (community card = [])
 valid actions:  [{'action': 'fold', 'amount': 0}, {'action': 'call', 'amount': 10}, {'action': 'raise', 'amount': {'min': 15, 'max': 100}}]
-hole card:  ['H4', 'H7']
+hole card:  ['SA', 'HA']
 {'action_histories': {'preflop': [{'action': 'SMALLBLIND',
                                    'add_amount': 5,
                                    'amount': 5,
-                                   'uuid': 'wujrzamhbgxkfpyugrwhqe'},
+                                   'uuid': 'odcblmnnxokdzlkdpgilzi'},
                                   {'action': 'BIGBLIND',
                                    'add_amount': 5,
                                    'amount': 10,
-                                   'uuid': 'feylaapyepqkhhxiwvmkgk'}]},
+                                   'uuid': 'jxxggmqgrsutjhgfyvxoyi'}]},
  'big_blind_pos': 0,
  'community_card': [],
  'dealer_btn': 0,
@@ -19,11 +19,11 @@ hole card:  ['H4', 'H7']
  'seats': [{'name': 'fish player 1',
             'stack': 90,
             'state': 'participating',
-            'uuid': 'feylaapyepqkhhxiwvmkgk'},
+            'uuid': 'jxxggmqgrsutjhgfyvxoyi'},
            {'name': 'fish player 2',
             'stack': 95,
             'state': 'participating',
-            'uuid': 'wujrzamhbgxkfpyugrwhqe'}],
+            'uuid': 'odcblmnnxokdzlkdpgilzi'}],
  'small_blind_amount': 5,
  'small_blind_pos': 1,
  'street': 'preflop'}
