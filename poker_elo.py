@@ -13,20 +13,20 @@ import pprint as pp
 # Want to take in two agents and run them against each other n amount of times to determine who's the better agent
 def run_simulation(agent_1 = RandomPlayer(), agent_2 = RandomPlayer(), config = setup_config(max_round=1, initial_stack=100, small_blind_amount=5)):
    
-    config.register_player(name="player 1", algorithm=agent_1)
-    config.register_player(name="player 2", algorithm=agent_2)
+  config.register_player(name="player 1", algorithm=agent_1)
+  config.register_player(name="player 2", algorithm=agent_2)
 
-    game_result = start_poker(config,verbose=0)
+  game_result = start_poker(config,verbose=0)
 
 
-    player_list = game_result['players']
+  player_list = game_result['players']
 
-    player_1_winnings = player_list[0]['stack']
-    player_2_winnings = player_list[1]['stack']
+  player_1_winnings = player_list[0]['stack']
+  player_2_winnings = player_list[1]['stack']
 
-    player_1_elo, player_2_elo = calculate_elo(score_a=player_1_winnings, score_b=player_2_winnings)
-    print("elo:")
-    print(player_1_elo, player_2_elo)
+  player_1_elo, player_2_elo = calculate_elo(score_a=player_1_winnings, score_b=player_2_winnings)
+  print("elo:")
+  print(player_1_elo, player_2_elo)
 
 
 
@@ -51,13 +51,13 @@ def calculate_elo(elo_a: float = 1500, elo_b: float = 1500, K: int = 16, score_a
 
 
 def main():
-    config = setup_config(max_round=100, initial_stack=100, small_blind_amount=5)
-    
-    agent_1 = RandomPlayer()
-    agent_2 = RandomPlayer()
+  config = setup_config(max_round=100, initial_stack=100, small_blind_amount=5)
+  
+  agent_1 = RandomPlayer()
+  agent_2 = RandomPlayer()
 
-    run_simulation(agent_1 = agent_1, agent_2 = agent_2, config= config)
+  run_simulation(agent_1 = agent_1, agent_2 = agent_2, config= config)
 
 
 if __name__ == "__main__":
-    main()
+  main()

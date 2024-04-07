@@ -26,8 +26,9 @@ class AlphaPlayer(BasePokerPlayer):
         '''
         self.encodings_zero_pad = self.encode_game(valid_actions, round_state)
 
-        print("Card state representation:")
-        self.update_card_state(hole_card, round_state)
+        # print("Card state representation:")
+        # self.update_card_state(hole_card, round_state)
+        # pp.pprint(round_state)
 
         self.print_card_state()
 
@@ -35,11 +36,17 @@ class AlphaPlayer(BasePokerPlayer):
         call_action_info = valid_actions[1]
         action, amount = call_action_info["action"], call_action_info["amount"]
 
-        model = Siamese(output_space=1, hidden_dim=1)
-        model.forward(game_state=self.encodings_zero_pad,
-                      card_state=self.card_state)
+        model = Siamese(output_space=9, hidden_dim=1)
 
-        return action, amount
+        _ , model_output = model.forward(game_state=self.encodings_zero_pad,
+                      card_state=self.card_state)
+        
+        pot_amount = round_state['pot']['main']['amount']
+        
+        # print(f"Pot: {pot_amount}")
+        # print(f"Valid actions: {valid_actions}")
+        
+        return self.convert_output_into_action(model_output, valid_actions,pot_amount)
 
     def receive_game_start_message(self, game_info):
         pass
@@ -229,3 +236,29 @@ class AlphaPlayer(BasePokerPlayer):
 
         # Apply padding
         return np.pad(self.encodings, pad_width=padding, mode='constant', constant_values=0)
+
+    def convert_output_into_action(self,output, valid_actions, pot_amount):
+        #amount you're allowed to call is always in 2nd value of valid actions
+        # print(type(output))
+        call_amount = valid_actions[1]['amount']
+        max_bet = valid_actions[2]['amount']['max']
+
+
+
+        output_to_action_dict = {0: ('fold', 0),
+                                1: ('call', call_amount),    #check is encoded as call with amount 0 in pypoker
+                                2: ('call', call_amount),
+                                3: ('raise', pot_amount*.5),
+                                4: ('raise', pot_amount*.75),
+                                5: ('raise', pot_amount),
+                                6: ('raise', pot_amount*1.5),
+                                7: ('raise', pot_amount*2),
+                                8: ('raise', max_bet)
+                                }
+
+        ##TODO: What if neural net selects invalid action, and how to add randomness
+
+        action, amount = output_to_action_dict[output.argmax().item()]
+        print(f"Alpha player did {action} for amount {amount}")
+
+        return action, amount

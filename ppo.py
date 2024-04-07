@@ -3,7 +3,6 @@
 	NOTE: All "ALG STEP"s are following the numbers from the original PPO pseudocode.
 			It can be found here: https://spinningup.openai.com/en/latest/_images/math/e62a8971472597f4b014c2da064f636ffe365ba3.svg
 """
-
 import time
 
 import numpy as np
@@ -31,6 +30,8 @@ class PPO:
 		"""
 
 		# Initialize hyperparameters for training with PPO
+		assert(type(env.observation_space) == gym.spaces.Box)
+		assert(type(env.action_space) == gym.spaces.Box)
 		self._init_hyperparameters(hyperparameters)
 
 		# Extract environment information
@@ -72,6 +73,7 @@ class PPO:
 			Return:
 				None
 		"""
+		#training loops
 		print(f"Learning... Running {self.max_timesteps_per_episode} timesteps per episode, ", end='')
 		print(f"{self.timesteps_per_batch} timesteps per batch for a total of {total_timesteps} timesteps")
 		t_so_far = 0 # Timesteps simulated so far

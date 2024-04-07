@@ -11,6 +11,8 @@ class ConsolePlayer(BasePokerPlayer):
     pp.pprint(round_state)
     print(U.visualize_declare_action(valid_actions, hole_card, round_state, self.uuid))
     action, amount = self.__receive_action_from_console(valid_actions)
+
+    print(f"Action: {action}, Amount: {amount}")
     return action, amount
 
   def receive_game_start_message(self, game_info):

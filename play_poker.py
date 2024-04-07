@@ -3,15 +3,16 @@ from FishPlayer import FishPlayer
 from ConsolePlayer import ConsolePlayer
 from EmulatorPlayer import EmulatorPlayer, MyModel
 from AlphaPlayer import AlphaPlayer
+from RandomPlayer import RandomPlayer
 import pprint as pp
 
 
 def main():
     config = setup_config(max_round=1, initial_stack=100, small_blind_amount=5)
-    config.register_player(name="fish player 1", algorithm=AlphaPlayer())
-    config.register_player(name="fish player 2", algorithm=FishPlayer())
+    config.register_player(name="player 1", algorithm=RandomPlayer())
+    config.register_player(name="player 2", algorithm=AlphaPlayer())
     game_result = start_poker(config, verbose=1)
-    # pp.pprint(game_result)
+    pp.pprint(game_result)
 
 
 if __name__ == "__main__":

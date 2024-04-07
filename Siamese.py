@@ -2,12 +2,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
 class Siamese(nn.Module):
     # TODO: Write in pytorch
 
     def __init__(self, output_space, hidden_dim):
-        super().__init__()
+        super(Siamese, self).__init__()
         # input space should be 16x16x6
 
         self.output_space = output_space
@@ -54,8 +53,9 @@ class Siamese(nn.Module):
 
         # linear layer for policy
         self.policy_fc1 = nn.Linear(4 * 4 * 32 + 4 * 4 * 16, self.hidden_dim)
-        self.policy_fc2 = nn.Linear(self.hidden_dim, output_space)
+        self.policy_fc2 = nn.Linear(self.hidden_dim, self.output_space)
 
+        ##No idea why softmax is being used here
         self.policy_net = nn.Sequential(
             self.policy_fc1,
             nn.ReLU(),
@@ -73,8 +73,8 @@ class Siamese(nn.Module):
             nn.ReLU(),
             self.reward_fc2
         )
-        self.flatten_card = nn.Flatten(1210, 1)
-        self.flatten_action = nn.Flatten(6092, 1)
+        self.flatten_card = nn.Flatten(start_dim=0)
+        self.flatten_action = nn.Flatten(start_dim=0)
 
     def forward(self, card_state, game_state):
 
@@ -91,14 +91,22 @@ class Siamese(nn.Module):
         card_output = self.card_net(card_state)
         game_output = self.action_net(game_state)
 
+        
+
         flat_card = self.flatten_card(card_output)
         flat_game = self.flatten_action(game_output)
 
-        concatted_game = torch.cat(flat_card, flat_game)
+        # print(f"Flattened:\n{flat_card.shape}, {flat_game.shape}")
+        
+
+        concatted_game = torch.cat((flat_card, flat_game),dim=0)
+        # print("Game shape:")
+        # print(concatted_game.shape)
 
         reward = self.reward_fc_net(concatted_game)
         actions = self.policy_net(concatted_game)
-
+        
+        print(f"Reward: {reward}\n Actions: {actions}")
         return reward, actions
 
 

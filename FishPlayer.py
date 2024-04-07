@@ -12,6 +12,8 @@ class FishPlayer(BasePokerPlayer):  # Do not forget to make parent class as "Bas
         # valid_actions format => [raise_action_info, call_action_info, fold_action_info]
         call_action_info = valid_actions[1]
         action, amount = call_action_info["action"], call_action_info["amount"]
+
+        print(f"Action: {action}, Amount: {amount}")
         return action, amount   # action returned here is sent to the poker engine
 
     def receive_game_start_message(self, game_info):

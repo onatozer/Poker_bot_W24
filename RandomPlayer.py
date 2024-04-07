@@ -17,6 +17,8 @@ class RandomPlayer(BasePokerPlayer):
     amount = choice["amount"]
     if action == "raise":
       amount = rand.randrange(amount["min"], max(amount["min"], amount["max"]) + 1)
+
+    print(f"Random player did {action} for amount {amount}")
     return action, amount
 
   def __choice_action(self, valid_actions):
