@@ -11,13 +11,10 @@ float64 --> (16, 16)
 float64 --> (16, 16)
 float64 --> (16, 16)
 float64 --> (16, 16)
-Reward: tensor([-0.2745], grad_fn=<ViewBackward0>)
- Actions: tensor([0.0538, 0.0535, 0.0495, 0.1150, 0.1057, 0.1851, 0.1428, 0.1523, 0.1424],
-       grad_fn=<SoftmaxBackward0>)
-Alpha player did raise for amount 15
-"player 2" declared "raise:15"
-Random player did raise for amount 20
-"player 1" declared "raise:20"
+Alpha player did call for amount 10
+"player 2" declared "call:10"
+Random player did raise for amount 95
+"player 1" declared "raise:95"
 Action histories
 (6, 16, 16)
 Shape: (6, 16, 16)
@@ -29,92 +26,17 @@ float64 --> (16, 16)
 float64 --> (16, 16)
 float64 --> (16, 16)
 float64 --> (16, 16)
-Reward: tensor([-0.8220], grad_fn=<ViewBackward0>)
- Actions: tensor([0.0500, 0.0559, 0.0623, 0.0883, 0.1295, 0.2780, 0.1645, 0.1084, 0.0630],
-       grad_fn=<SoftmaxBackward0>)
-Alpha player did raise for amount 35
-"player 2" declared "raise:35"
-Random player did raise for amount 82
-"player 1" declared "raise:82"
-Action histories
-(6, 16, 16)
-Shape: (6, 16, 16)
-Type: <class 'numpy.ndarray'>
-Dtype: float64
-float64 --> (16, 16)
-float64 --> (16, 16)
-float64 --> (16, 16)
-float64 --> (16, 16)
-float64 --> (16, 16)
-float64 --> (16, 16)
-Reward: tensor([-0.5730], grad_fn=<ViewBackward0>)
- Actions: tensor([0.0762, 0.2326, 0.1667, 0.1063, 0.0701, 0.0798, 0.1858, 0.0383, 0.0442],
-       grad_fn=<SoftmaxBackward0>)
-Alpha player did call for amount 82
-"player 2" declared "call:82"
-Street "flop" started. (community card = ['S8', 'SK', 'DT'])
-Action histories
-(6, 16, 16)
-Shape: (6, 16, 16)
-Type: <class 'numpy.ndarray'>
-Dtype: float64
-float64 --> (16, 16)
-float64 --> (16, 16)
-float64 --> (16, 16)
-float64 --> (16, 16)
-float64 --> (16, 16)
-float64 --> (16, 16)
-Reward: tensor([-0.7626], grad_fn=<ViewBackward0>)
- Actions: tensor([0.1130, 0.1768, 0.2253, 0.0570, 0.0454, 0.1518, 0.1180, 0.0604, 0.0522],
-       grad_fn=<SoftmaxBackward0>)
-Alpha player did call for amount 0
-"player 2" declared "call:0"
-Random player did raise for amount 17
-"player 1" declared "raise:17"
-Action histories
-(6, 16, 16)
-Shape: (6, 16, 16)
-Type: <class 'numpy.ndarray'>
-Dtype: float64
-float64 --> (16, 16)
-float64 --> (16, 16)
-float64 --> (16, 16)
-float64 --> (16, 16)
-float64 --> (16, 16)
-float64 --> (16, 16)
-Reward: tensor([-0.9468], grad_fn=<ViewBackward0>)
- Actions: tensor([0.0853, 0.2778, 0.0961, 0.1178, 0.0973, 0.0646, 0.1311, 0.0537, 0.0763],
-       grad_fn=<SoftmaxBackward0>)
-Alpha player did call for amount 17
-"player 2" declared "call:17"
-Street "turn" started. (community card = ['S8', 'SK', 'DT', 'SA'])
-Action histories
-(6, 16, 16)
-Shape: (6, 16, 16)
-Type: <class 'numpy.ndarray'>
-Dtype: float64
-float64 --> (16, 16)
-float64 --> (16, 16)
-float64 --> (16, 16)
-float64 --> (16, 16)
-float64 --> (16, 16)
-float64 --> (16, 16)
-Reward: tensor([0.3917], grad_fn=<ViewBackward0>)
- Actions: tensor([0.0488, 0.1414, 0.2178, 0.1250, 0.0781, 0.2178, 0.0695, 0.0564, 0.0452],
-       grad_fn=<SoftmaxBackward0>)
-Alpha player did call for amount 0
-"player 2" declared "call:0"
-Random player did raise for amount -1
-"player 1" declared "raise:-1"
-"['player 2']" won the round 1 (stack = {'player 1': 1, 'player 2': 199})
+Alpha player did raise for amount 157.5
+"player 2" declared "raise:157.5"
+"['player 1']" won the round 1 (stack = {'player 1': 110, 'player 2': 90})
 {'players': [{'name': 'player 1',
-              'stack': 1,
+              'stack': 110,
               'state': 'participating',
-              'uuid': 'ycovfnntcohhxhlfjqzgvp'},
+              'uuid': 'kkzzjylsinbksrjjxqqgog'},
              {'name': 'player 2',
-              'stack': 199,
+              'stack': 90,
               'state': 'participating',
-              'uuid': 'adcawkmjweczocntolueux'}],
+              'uuid': 'mqahljlmpffzzhznqnexfu'}],
  'rule': {'ante': 0,
           'blind_structure': {},
           'initial_stack': 100,

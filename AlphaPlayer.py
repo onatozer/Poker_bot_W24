@@ -1,5 +1,5 @@
 from pypokerengine.players import BasePokerPlayer
-from Siamese import Siamese
+from Siamese import SiamesePolicy
 import pprint as pp
 import numpy as np
 
@@ -8,11 +8,19 @@ class AlphaPlayer(BasePokerPlayer):
     def __init__(self):
         super().__init__()
         self.card_state = np.zeros((6, 16, 16))
+
         self.hole_card_updated = False
         self.encodings = np.zeros((24, 4, 9))
+
         self.encodings_zero_pad = np.zeros((24, 16, 16))
         self.own_chips = 0
         self.opponent_chips = 0
+        
+        #TODO: Create list of tensors which store all the hand information
+        self.past_hands = []
+        #[(game-state tensor, card-state tensor), (game-state tensor, card-state tensor)]
+
+
 
     #  we define the logic to make an action through this method. (so this method would be the core of your AI)
     def declare_action(self, valid_actions, hole_card, round_state):
@@ -36,9 +44,9 @@ class AlphaPlayer(BasePokerPlayer):
         call_action_info = valid_actions[1]
         action, amount = call_action_info["action"], call_action_info["amount"]
 
-        model = Siamese(output_space=9, hidden_dim=1)
+        model = SiamesePolicy()
 
-        _ , model_output = model.forward(game_state=self.encodings_zero_pad,
+        model_output = model.forward(game_state=self.encodings_zero_pad,
                       card_state=self.card_state)
         
         pot_amount = round_state['pot']['main']['amount']
@@ -61,7 +69,9 @@ class AlphaPlayer(BasePokerPlayer):
         pass
 
     def receive_round_result_message(self, winners, hand_info, round_state):
+        # self.update_card_state()
         pass
+        
 
     def update_card_state(self, hole_card, round_state):
         # update hole cards
@@ -262,3 +272,8 @@ class AlphaPlayer(BasePokerPlayer):
         print(f"Alpha player did {action} for amount {amount}")
 
         return action, amount
+
+
+    def update_past_hands(self):
+        hand_tuple = (self.encodings_zero_pad, self.card_state)
+        self.past_hands.append(hand_tuple)

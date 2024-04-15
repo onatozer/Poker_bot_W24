@@ -1,0 +1,35 @@
+TensorDict(
+    fields={
+        action: Tensor(shape=torch.Size([1000, 1]), device=cpu, dtype=torch.float32, is_shared=False),
+        advantage: Tensor(shape=torch.Size([1000, 1]), device=cpu, dtype=torch.float32, is_shared=False),
+        collector: TensorDict(
+            fields={
+                traj_ids: Tensor(shape=torch.Size([1000]), device=cpu, dtype=torch.int64, is_shared=False)},
+            batch_size=torch.Size([1000]),
+            device=None,
+            is_shared=False),
+        done: Tensor(shape=torch.Size([1000, 1]), device=cpu, dtype=torch.bool, is_shared=False),
+        loc: Tensor(shape=torch.Size([1000, 1]), device=cpu, dtype=torch.float32, is_shared=False),
+        next: TensorDict(
+            fields={
+                done: Tensor(shape=torch.Size([1000, 1]), device=cpu, dtype=torch.bool, is_shared=False),
+                observation: Tensor(shape=torch.Size([1000, 11]), device=cpu, dtype=torch.float32, is_shared=False),
+                reward: Tensor(shape=torch.Size([1000, 1]), device=cpu, dtype=torch.float32, is_shared=False),
+                state_value: Tensor(shape=torch.Size([1000, 1]), device=cpu, dtype=torch.float32, is_shared=False),
+                step_count: Tensor(shape=torch.Size([1000, 1]), device=cpu, dtype=torch.int64, is_shared=False),
+                terminated: Tensor(shape=torch.Size([1000, 1]), device=cpu, dtype=torch.bool, is_shared=False),
+                truncated: Tensor(shape=torch.Size([1000, 1]), device=cpu, dtype=torch.bool, is_shared=False)},
+            batch_size=torch.Size([1000]),
+            device=None,
+            is_shared=False),
+        observation: Tensor(shape=torch.Size([1000, 11]), device=cpu, dtype=torch.float32, is_shared=False),
+        sample_log_prob: Tensor(shape=torch.Size([1000]), device=cpu, dtype=torch.float32, is_shared=False),
+        scale: Tensor(shape=torch.Size([1000, 1]), device=cpu, dtype=torch.float32, is_shared=False),
+        state_value: Tensor(shape=torch.Size([1000, 1]), device=cpu, dtype=torch.float32, is_shared=False),
+        step_count: Tensor(shape=torch.Size([1000, 1]), device=cpu, dtype=torch.int64, is_shared=False),
+        terminated: Tensor(shape=torch.Size([1000, 1]), device=cpu, dtype=torch.bool, is_shared=False),
+        truncated: Tensor(shape=torch.Size([1000, 1]), device=cpu, dtype=torch.bool, is_shared=False),
+        value_target: Tensor(shape=torch.Size([1000, 1]), device=cpu, dtype=torch.float32, is_shared=False)},
+    batch_size=torch.Size([1000]),
+    device=None,
+    is_shared=False)
