@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.nn.Module import NormalParamExtractor
+# from torch.nn.Module import NormalParamExtractor
 import torchrl 
 
 
@@ -61,7 +61,7 @@ class SiamesePolicy(nn.Module):
             self.policy_fc1,
             nn.ReLU(),
             self.policy_fc2,
-            NormalParamExtractor(),
+            # NormalParamExtractor(),
         )
 
         # linear layer for reward (for value loss)
@@ -103,8 +103,10 @@ class SiamesePolicy(nn.Module):
         concatted_game = torch.cat((flat_card, flat_game),dim=0)
         # print("Game shape:")
         # print(concatted_game.shape)
-       
+
         actions = self.policy_net(concatted_game)
+        actions = F.softmax(actions,dim = -1)
+        
         return actions
 
 
@@ -112,12 +114,12 @@ class SiamesePolicy(nn.Module):
 class SiameseReward(nn.Module):
     # TODO: Write in pytorch
 
-    def __init__(self, output_space, hidden_dim):
+    def __init__(self):
         super(SiameseReward, self).__init__()
         # input space should be 16x16x6
 
-        self.output_space = output_space
-        self.hidden_dim = hidden_dim
+        self.output_space = 1
+        self.hidden_dim = 64
 
         # Card Net BS
         self.conv1 = nn.Conv2d(in_channels=6,

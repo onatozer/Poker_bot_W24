@@ -1,11 +1,13 @@
 from pypokerengine.players import BasePokerPlayer
-from Siamese import SiamesePolicy
+from Siamese import SiamesePolicy, SiameseReward
 import pprint as pp
 import numpy as np
-
+from pypokerengine.api.emulator import Emulator
+from pypokerengine.utils.card_utils import gen_cards
+from pypokerengine.utils.game_state_utils import restore_game_state, attach_hole_card, attach_hole_card_from_deck
 
 class AlphaPlayer(BasePokerPlayer):
-    def __init__(self):
+    def __init__(self, name):
         super().__init__()
         self.card_state = np.zeros((6, 16, 16))
 
@@ -13,13 +15,22 @@ class AlphaPlayer(BasePokerPlayer):
         self.encodings = np.zeros((24, 4, 9))
 
         self.encodings_zero_pad = np.zeros((24, 16, 16))
+
+        self.name = name
+        self.uuid = ""
+
+        self.stage = "preflop"
         self.own_chips = 0
         self.opponent_chips = 0
         
         #TODO: Create list of tensors which store all the hand information
         self.past_hands = []
-        #[(game-state tensor, card-state tensor), (game-state tensor, card-state tensor)]
 
+        #Instantiate the model
+        self.policy = SiamesePolicy()
+        self.critic = SiameseReward()
+
+        #[(game-state tensor, card-state tensor), (game-state tensor, card-state tensor)]
 
 
     #  we define the logic to make an action through this method. (so this method would be the core of your AI)
@@ -33,37 +44,85 @@ class AlphaPlayer(BasePokerPlayer):
         print("Game State matrix:")
         '''
         self.encodings_zero_pad = self.encode_game(valid_actions, round_state)
+        self.update_card_state(hole_card, round_state)
 
-        # print("Card state representation:")
-        # self.update_card_state(hole_card, round_state)
-        # pp.pprint(round_state)
+        
+        # model = SiamesePolicy()
+        
+        ##instantiate the emualtor with the current_state
+        current_state = self._setup_game_state(round_state, hole_card)
 
-        self.print_card_state()
+        
 
-        # TODO: Actual action has to be
-        call_action_info = valid_actions[1]
-        action, amount = call_action_info["action"], call_action_info["amount"]
 
-        model = SiamesePolicy()
 
-        model_output = model.forward(game_state=self.encodings_zero_pad,
+
+
+
+
+
+        model_output = self.policy.forward(game_state=self.encodings_zero_pad,
                       card_state=self.card_state)
         
         pot_amount = round_state['pot']['main']['amount']
-        
-        # print(f"Pot: {pot_amount}")
-        # print(f"Valid actions: {valid_actions}")
+      
         
         return self.convert_output_into_action(model_output, valid_actions,pot_amount)
 
     def receive_game_start_message(self, game_info):
-        pass
+        # print("round started")
 
+        nb_player = game_info['player_num']
+        max_round = game_info['rule']['max_round']
+        sb_amount = game_info['rule']['small_blind_amount']
+        ante_amount = game_info['rule']['ante']
+
+        self.emulator = Emulator()
+        self.emulator.set_game_rule(nb_player, max_round, sb_amount, ante_amount)
+        for player_info in game_info['seats']:
+            uuid = player_info['uuid']
+            player_model = self.my_model if uuid == self.uuid else self.opponents_model
+            self.emulator.register_player(uuid, player_model)
+
+        #stupid ass pypoker shit, emulator uuid's gon be different from game uuid
+        # players_info = {
+        #     "uuid-1": { "name": config.players_info[0]['name'], "stack": config.initial_stack},
+        #     "uuid-2": { "name": config.players_info[1]['name'], "stack": config.initial_stack},
+        # }
+        self.initial_state = self.emulator.generate_initial_game_state()
+
+
+        #maybe we want this for later (calculate amount bet for each player)
+        # for player in game_info['seats']:
+        #     if player['name'] == self.name:
+        #         self.uuid = player['uuid']
+        
     def receive_round_start_message(self, round_count, hole_card, seats):
-        pass
+        ##reset private member variables at the start of each round
+        self.card_state = np.zeros((6, 16, 16))
 
+        self.hole_card_updated = False
+        self.encodings = np.zeros((24, 4, 9))
+
+        self.encodings_zero_pad = np.zeros((24, 16, 16))
+
+        ##reset the emulator
+        # self.my_model = MyModel()
+        
     def receive_street_start_message(self, street, round_state):
         pass
+
+    #set the emulator state to the current state
+    def _setup_game_state(self, round_state, my_hole_card):
+        game_state = restore_game_state(round_state)
+        game_state['table'].deck.shuffle()
+        player_uuids = [player_info['uuid'] for player_info in round_state['seats']]
+        for uuid in player_uuids:
+            if uuid == self.uuid:
+                game_state = attach_hole_card(game_state, uuid, gen_cards(my_hole_card))  # attach my holecard
+            else:
+                game_state = attach_hole_card_from_deck(game_state, uuid)  # attach opponents holecard at random
+        return game_state
 
     def receive_game_update_message(self, action, round_state):
         pass
@@ -273,7 +332,31 @@ class AlphaPlayer(BasePokerPlayer):
 
         return action, amount
 
-
     def update_past_hands(self):
         hand_tuple = (self.encodings_zero_pad, self.card_state)
         self.past_hands.append(hand_tuple)
+
+    def update_amount_bet(self, round_state):
+
+        if('turn' in round_state['action_histories']):
+            
+            
+            return
+        
+        if('river' in round_state['action_histories']):
+            
+            return
+        
+        if('flop' in round_state['action_histories']):
+            
+            return
+        
+        if('preflop' in round_state['action_histories']):
+            
+            return
+    
+    
+    def train(self):
+        mycock = "1inch"
+        return mycock
+        

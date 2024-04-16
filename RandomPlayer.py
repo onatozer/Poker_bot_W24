@@ -1,5 +1,6 @@
 from pypokerengine.players import BasePokerPlayer
 import random as rand
+import pprint as pp
 
 class RandomPlayer(BasePokerPlayer):
 
@@ -15,6 +16,8 @@ class RandomPlayer(BasePokerPlayer):
     choice = self.__choice_action(valid_actions)
     action = choice["action"]
     amount = choice["amount"]
+    print("round state")
+    pp.pprint(round_state)
     if action == "raise":
       amount = rand.randrange(amount["min"], max(amount["min"], amount["max"]) + 1)
 
@@ -32,6 +35,8 @@ class RandomPlayer(BasePokerPlayer):
 
 
   def receive_game_start_message(self, game_info):
+    print("game info:")
+    pp.pprint(game_info)
     pass
 
   def receive_round_start_message(self, round_count, hole_card, seats):
