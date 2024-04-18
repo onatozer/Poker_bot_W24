@@ -10,10 +10,11 @@ import pprint as pp
 
 def main():
     config = setup_config(max_round=1, initial_stack=100, small_blind_amount=5)
-    config.register_player(name="player 1", algorithm=AlphaPlayer("player 1"))
-    config.register_player(name="player 2", algorithm=RandomPlayer())
+    config.register_player(name="player 1", algorithm=AlphaPlayer(name= "player 1",is_training=True))
+    config.register_player(name="player 2", algorithm=FishPlayer())
     game_result = start_poker(config, verbose=1)
     pp.pprint(game_result)
+    env = Emulator()
 
 
 if __name__ == "__main__":

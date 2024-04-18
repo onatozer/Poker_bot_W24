@@ -25,17 +25,18 @@ class environment:
         game_state, event  = self.emulator.start_new_round(self.initial_state)
         next_turn_state, events = self.emulator.apply_action(game_state, 'call', 10)
 
-        print('next turn state')
-        print(next_turn_state)
+        self.game_state = game_state
+        # print('next turn state')
+        # print(next_turn_state)
 
         # print("sanity check")
         # print(self.p1.uuid)
 
 
-        print("card state:")
-        print(self.p1.card_state)
-        print("has been updated")
-        print(self.p1.hole_card_updated)
+        # print("card state:")
+        # print(self.p1.card_state)
+        # print("has been updated")
+        # print(self.p1.hole_card_updated)
 
 
         # self.observation_space = self.p1.encodings_zero_pad()
@@ -54,6 +55,8 @@ class environment:
     #     print("events")
     #     pp.pprint(events)
 
+    def end_it(self):
+        return self.emulator.run_until_round_finish(self.game_state)
     '''
     def step():
     #goal is to move onto next action
@@ -71,12 +74,14 @@ class environment:
 def main():
     config = setup_config(max_round=1, initial_stack=100, small_blind_amount=5)
     p1 = AlphaPlayer("player 1")
-    config.register_player(name="player 1", algorithm=p1)
-    config.register_player(name="player 2", algorithm=RandomPlayer())
+    config.register_player(name="player 1", algorithm=FishPlayer())
+    config.register_player(name="player 2", algorithm=FishPlayer())
     # pp.pprint(config.players_info)
     env = environment(config,p1)
-    print("sanity check")
-    print(p1.uuid)
+
+    pp.pprint(env.end_it())
+    # print("sanity check")
+    # print(p1.uuid)
 
 
     # env.observation_space()

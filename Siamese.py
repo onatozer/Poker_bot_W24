@@ -77,7 +77,7 @@ class SiamesePolicy(nn.Module):
         self.flatten_card = nn.Flatten(start_dim=0)
         self.flatten_action = nn.Flatten(start_dim=0)
 
-    def forward(self, card_state, game_state):
+    def forward(self, game_state, card_state):
 
         print((card_state.shape))
         print("Shape:", card_state.shape)
@@ -185,7 +185,7 @@ class SiameseReward(nn.Module):
         self.flatten_card = nn.Flatten(start_dim=0)
         self.flatten_action = nn.Flatten(start_dim=0)
 
-    def forward(self, card_state, game_state):
+    def forward(self, game_state, card_state):
 
         print((card_state.shape))
         print("Shape:", card_state.shape)

@@ -5,9 +5,11 @@ import numpy as np
 from pypokerengine.api.emulator import Emulator
 from pypokerengine.utils.card_utils import gen_cards
 from pypokerengine.utils.game_state_utils import restore_game_state, attach_hole_card, attach_hole_card_from_deck
+from torch.distributions.categorical import Categorical
+from cartpole_ppo_follow import PPOTrainer, calculate_gae, discount_rewards
 
 class AlphaPlayer(BasePokerPlayer):
-    def __init__(self, name):
+    def __init__(self, name = "player 1", is_training = False):
         super().__init__()
         self.card_state = np.zeros((6, 16, 16))
 
@@ -29,6 +31,11 @@ class AlphaPlayer(BasePokerPlayer):
         #Instantiate the model
         self.policy = SiamesePolicy()
         self.critic = SiameseReward()
+        
+        # self.actor_optimizer = optim.Adam(self.actor.parameters(), lr=3e-4)
+        # self.critic_optimizer = optim.Adam(self.critic.parameters(), lr=3e-4)
+
+        self.is_training = is_training
 
         #[(game-state tensor, card-state tensor), (game-state tensor, card-state tensor)]
 
@@ -44,30 +51,155 @@ class AlphaPlayer(BasePokerPlayer):
         print("Game State matrix:")
         '''
         self.encodings_zero_pad = self.encode_game(valid_actions, round_state)
-        self.update_card_state(hole_card, round_state)
+        self.card_state = self.update_card_state(hole_card, round_state)
 
         
         # model = SiamesePolicy()
+
+        #Run forward pass through the policy network and return the action generated 
         
+
         ##instantiate the emualtor with the current_state
         current_state = self._setup_game_state(round_state, hole_card)
 
-        
 
+        #perform a rollout on this action and return the data, then train the network on it
+        loop_pot = round_state['pot']['main']['amount']
+        loop_valid_actions = valid_actions
 
+        if(self.is_training):
+            trainer = PPOTrainer(policy_network = self.policy, critic_network = self.critic)
+            train_data = [[], [], [], []] # obs, act, values, act_log_probs
+        #     # obs = env.reset()
 
+            ep_reward = 0
+            done = False
+            obs = (self.encodings_zero_pad, self.card_state)
+            while(not done):
+                policy_output = self.policy.forward(game_state=self.encodings_zero_pad,
+                                    card_state=self.card_state)
+                        
+                critic_output = self.critic.forward(game_state=self.encodings_zero_pad,
+                                    card_state=self.card_state)
+                
+                
+                logits = policy_output
+                act_distribution = Categorical(logits=logits)
+                act = act_distribution.sample()
 
+                act_log_prob = act_distribution.log_prob(act)
 
+                val = critic_output.item()
 
+                action, amount = self.convert_output_into_action(act.item(),loop_valid_actions,loop_pot)
 
+                print("emulator output")
 
-        model_output = self.policy.forward(game_state=self.encodings_zero_pad,
-                      card_state=self.card_state)
-        
+                next_turn_state, events = self.emulator.apply_action(current_state,action,amount)
+                pp.pprint(next_turn_state)
+                pp.pprint((events))
+
+                #pypoker is lowkey aids
+                reward = 0
+                for event in events:
+                    if 'players' in event:
+                        for player in event['players']:
+                            if(player['uuid'] == self.uuid):
+                                reward = player['stack'] - self.initial_pot
+
+                    if event['type'] == 'event_round_finish':
+                        done = True
+
+                if(not done):
+                    #get most recent event
+                    round_state = events[-1]['round_state']
+                    valid_actions = events[-1]['valid_actions']
+
+                    #next_obs = (card state, game state)
+                next_obs = (self.update_card_state(hole_card,round_state), self.encode_game(valid_actions,round_state))
+        #         next_obs, reward, done, _ = env.step(act)
+
+                
+                for i, item in enumerate((obs, act, val, act_log_prob)):
+                    # print('item:')
+                    # print(item)
+                    train_data[i].append(item)
+
+                obs = next_obs
+                print("observation")
+                print(obs)
+                ep_reward += reward
+                if done:
+                    break
+
+            print("Train data")
+            print(train_data)
+
+            gae_rewards = calculate_gae(ep_reward,train_data[2])
+
+            #TODO: update model parameters:
+            print("Gay:")
+            print(gae_rewards)
+
+            print("thomas")
+            # print(train_data[0])
+
+            for i, item in enumerate(train_data[0]):
+                # (train_data[0][i], train_data[1][i], train_data[3[i]], gae_rewards[i]])
+                # print(f"obs: {train_data[0][i]}, action {train_data[1][i]}, log probs {train_data[3][i]}")
+                trainer.train_policy(train_data[0][i], train_data[1][i], train_data[3][i], gae_rewards[i])
+                # trainer.train_value(train_data[0][i], train_data[1[i], train_data[3[i]], gae_rewards[i]])
+
+      
+
+        policy_output = self.policy.forward(game_state=self.encodings_zero_pad,
+                                    card_state=self.card_state)
         pot_amount = round_state['pot']['main']['amount']
+
+
+        # adv = gae
+        # ratio = (log_prob - old_log_prob).exp()
+
+        # # actor_loss
+        # surr_loss = ratio * adv
+        # clipped_surr_loss = (
+        #     torch.clamp(ratio, 1.0 - self.epsilon, 1.0 + self.epsilon) * adv
+        # )
+
+        # surr3 = 3*adv
+
+        # # entropy
+        # entropy = dist.entropy().mean()
+
+        # actor_loss = (
+        #     -torch.min(surr_loss, clipped_surr_loss,surr3).mean()
+        #     - entropy * self.entropy_weight
+        # )
+        # # critic_loss
+        # value = self.critic(state)
+        # #clipped_value = old_value + (value - old_value).clamp(-0.5, 0.5)
+
+        # clampreturn = torch.clamp(return_,-self.ownchips,self.opponentchips)
+        # critic_loss = (clampreturn - value).pow(2).mean()
+
+        # # train critic
+        # self.critic_optimizer.zero_grad()
+        # critic_loss.backward(retain_graph=True)
+        # self.critic_optimizer.step()
+
+        # # train actor
+        # self.actor_optimizer.zero_grad()
+        # actor_loss.backward()
+        # self.actor_optimizer.step()
+
+        # actor_losses.append(actor_loss.item())
+        # critic_losses.append(critic_loss.item())
+
+        act_distribution = Categorical(logits=policy_output)
+        act = act_distribution.sample()
       
         
-        return self.convert_output_into_action(model_output, valid_actions,pot_amount)
+        return self.convert_output_into_action(act.item(), valid_actions,pot_amount)
 
     def receive_game_start_message(self, game_info):
         # print("round started")
@@ -81,7 +213,15 @@ class AlphaPlayer(BasePokerPlayer):
         self.emulator.set_game_rule(nb_player, max_round, sb_amount, ante_amount)
         for player_info in game_info['seats']:
             uuid = player_info['uuid']
-            player_model = self.my_model if uuid == self.uuid else self.opponents_model
+            player_model = AlphaPlayer(name = uuid, is_training=False)
+            # player_model = self.my_model if uuid == self.uuid else self.opponents_model
+
+            ##record the alphaPlayer's uuid (important for later)
+            #TODO: change so that this updates start of each round
+            if(player_info['name'] == self.name):
+                self.uuid = uuid
+                self.initial_pot = player_info['stack']
+
             self.emulator.register_player(uuid, player_model)
 
         #stupid ass pypoker shit, emulator uuid's gon be different from game uuid
@@ -89,7 +229,7 @@ class AlphaPlayer(BasePokerPlayer):
         #     "uuid-1": { "name": config.players_info[0]['name'], "stack": config.initial_stack},
         #     "uuid-2": { "name": config.players_info[1]['name'], "stack": config.initial_stack},
         # }
-        self.initial_state = self.emulator.generate_initial_game_state()
+        # self.initial_state = self.emulator.generate_initial_game_state()
 
 
         #maybe we want this for later (calculate amount bet for each player)
@@ -99,6 +239,8 @@ class AlphaPlayer(BasePokerPlayer):
         
     def receive_round_start_message(self, round_count, hole_card, seats):
         ##reset private member variables at the start of each round
+        print("seats")
+        pp.pprint(seats)
         self.card_state = np.zeros((6, 16, 16))
 
         self.hole_card_updated = False
@@ -106,8 +248,6 @@ class AlphaPlayer(BasePokerPlayer):
 
         self.encodings_zero_pad = np.zeros((24, 16, 16))
 
-        ##reset the emulator
-        # self.my_model = MyModel()
         
     def receive_street_start_message(self, street, round_state):
         pass
@@ -130,38 +270,40 @@ class AlphaPlayer(BasePokerPlayer):
     def receive_round_result_message(self, winners, hand_info, round_state):
         # self.update_card_state()
         pass
-        
 
     def update_card_state(self, hole_card, round_state):
+        card_state = self.card_state
         # update hole cards
         if not self.hole_card_updated:
-            self.card_state[0, ...] = self.encode_card(hole_card)
+            card_state[0, ...] = self.encode_card(hole_card)
             self.hole_card_updated = True
 
         # update flop cards
         elif len(round_state['community_card']) == 3:
-            self.card_state[1, ...] = self.encode_card(
+            card_state[1, ...] = self.encode_card(
                 round_state['community_card'])
         # update turn card
         elif len(round_state['community_card']) == 4:
-            self.card_state[2, ...] = self.encode_card(
+            card_state[2, ...] = self.encode_card(
                 round_state['community_card'][3:])
         # update river card
         elif len(round_state['community_card']) == 5:
-            self.card_state[3, ...] = self.encode_card(
+            card_state[3, ...] = self.encode_card(
                 round_state['community_card'][4:])
 
         # update all public cards
         if len(round_state['community_card']) > 0:
-            self.card_state[4, ...] = self.encode_card(
+            card_state[4, ...] = self.encode_card(
                 round_state['community_card'])
 
         # update all hole and public cards combined
         if len(round_state['community_card']) > 0:
-            self.card_state[5, ...] = (self.card_state[0, ...].astype(
+            card_state[5, ...] = (self.card_state[0, ...].astype(
                 bool) | self.card_state[4, ...].astype(bool)).astype(int)
         else:
-            self.card_state[5, ...] = self.card_state[0, ...]
+            card_state[5, ...] = self.card_state[0, ...]
+
+        return card_state
 
     def encode_card(self, cards):
         def pad_vector(vec):
@@ -308,7 +450,10 @@ class AlphaPlayer(BasePokerPlayer):
 
     def convert_output_into_action(self,output, valid_actions, pot_amount):
         #amount you're allowed to call is always in 2nd value of valid actions
-        # print(type(output))
+        print("output")
+        
+        # print(act)
+
         call_amount = valid_actions[1]['amount']
         max_bet = valid_actions[2]['amount']['max']
 
@@ -325,9 +470,8 @@ class AlphaPlayer(BasePokerPlayer):
                                 8: ('raise', max_bet)
                                 }
 
-        ##TODO: What if neural net selects invalid action, and how to add randomness
 
-        action, amount = output_to_action_dict[output.argmax().item()]
+        action, amount = output_to_action_dict[output]
         print(f"Alpha player did {action} for amount {amount}")
 
         return action, amount
