@@ -94,9 +94,13 @@ class PPOTrainer():
       new_logits = self.policy(obs_game_state,obs_card_state)
       new_logits = Categorical(logits=new_logits)
 
-      new_log_probs = new_logits.log_prob(acts).item()
+      # new_logits = self.ac.policy(obs)
+      # new_logits = Categorical(logits=new_logits)
+      # new_log_probs = new_logits.log_prob(acts)
 
-      policy_ratio = torch.exp(new_log_probs - old_log_probs.item())
+      new_log_probs = new_logits.log_prob(acts)
+
+      policy_ratio = torch.exp(new_log_probs - old_log_probs)
       clipped_ratio = policy_ratio.clamp(
           1 - self.ppo_clip_val, 1 + self.ppo_clip_val)
 
@@ -104,7 +108,14 @@ class PPOTrainer():
       full_loss = policy_ratio * gaes
       
       surr3 = 3*gaes
-      policy_loss = -torch.min(full_loss, clipped_loss,surr3).mean()
+
+
+      #Pytorch can't comprehend taking the min of three arguments, so we do this
+      min_full_clipped = torch.min(full_loss, clipped_loss)
+      min_final = torch.min(min_full_clipped, surr3)
+      policy_loss = -min_final.mean()
+      
+      # policy_loss = -torch.min(full_loss, clipped_loss,surr3).mean()
       
       policy_loss.backward()
       self.policy_optim.step()

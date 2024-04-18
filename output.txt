@@ -1,31 +1,24 @@
-game info:
-{'player_num': 2,
- 'rule': {'ante': 0,
-          'blind_structure': {},
-          'initial_stack': 100,
-          'max_round': 1,
-          'small_blind_amount': 5},
- 'seats': [{'name': 'player 1',
-            'stack': 100,
-            'state': 'participating',
-            'uuid': 'uoxsvnvtukqxbnbcdouzjo'},
-           {'name': 'player 2',
-            'stack': 100,
-            'state': 'participating',
-            'uuid': 'jkngtwvrcbmfcgshpfrfat'}]}
-hole card
-['SA', 'D2']
+seats
+[{'name': 'player 1',
+  'stack': 90,
+  'state': 'participating',
+  'uuid': 'etqkzbkpwglrqlswarznqk'},
+ {'name': 'player 2',
+  'stack': 95,
+  'state': 'participating',
+  'uuid': 'wgyffklekwvjcownzbbixh'}]
 Started the round 1
 Street "preflop" started. (community card = [])
-round state
+valid actions:  [{'action': 'fold', 'amount': 0}, {'action': 'call', 'amount': 10}, {'action': 'raise', 'amount': {'min': 15, 'max': 100}}]
+hole card:  ['SQ', 'S2']
 {'action_histories': {'preflop': [{'action': 'SMALLBLIND',
                                    'add_amount': 5,
                                    'amount': 5,
-                                   'uuid': 'jkngtwvrcbmfcgshpfrfat'},
+                                   'uuid': 'wgyffklekwvjcownzbbixh'},
                                   {'action': 'BIGBLIND',
                                    'add_amount': 5,
                                    'amount': 10,
-                                   'uuid': 'uoxsvnvtukqxbnbcdouzjo'}]},
+                                   'uuid': 'etqkzbkpwglrqlswarznqk'}]},
  'big_blind_pos': 0,
  'community_card': [],
  'dealer_btn': 0,
@@ -35,48 +28,16 @@ round state
  'seats': [{'name': 'player 1',
             'stack': 90,
             'state': 'participating',
-            'uuid': 'uoxsvnvtukqxbnbcdouzjo'},
+            'uuid': 'etqkzbkpwglrqlswarznqk'},
            {'name': 'player 2',
             'stack': 95,
             'state': 'participating',
-            'uuid': 'jkngtwvrcbmfcgshpfrfat'}],
+            'uuid': 'wgyffklekwvjcownzbbixh'}],
  'small_blind_amount': 5,
  'small_blind_pos': 1,
  'street': 'preflop'}
-Random player did raise for amount 79
-"player 2" declared "raise:79"
-Action histories
-round state
-{'action_histories': {'preflop': [{'action': 'SMALLBLIND',
-                                   'add_amount': 5,
-                                   'amount': 5,
-                                   'uuid': 'jkngtwvrcbmfcgshpfrfat'},
-                                  {'action': 'BIGBLIND',
-                                   'add_amount': 5,
-                                   'amount': 10,
-                                   'uuid': 'uoxsvnvtukqxbnbcdouzjo'},
-                                  {'action': 'RAISE',
-                                   'add_amount': 69,
-                                   'amount': 79,
-                                   'paid': 74,
-                                   'uuid': 'jkngtwvrcbmfcgshpfrfat'}]},
- 'big_blind_pos': 0,
- 'community_card': [],
- 'dealer_btn': 0,
- 'next_player': 0,
- 'pot': {'main': {'amount': 89}, 'side': []},
- 'round_count': 1,
- 'seats': [{'name': 'player 1',
-            'stack': 90,
-            'state': 'participating',
-            'uuid': 'uoxsvnvtukqxbnbcdouzjo'},
-           {'name': 'player 2',
-            'stack': 21,
-            'state': 'participating',
-            'uuid': 'jkngtwvrcbmfcgshpfrfat'}],
- 'small_blind_amount': 5,
- 'small_blind_pos': 1,
- 'street': 'preflop'}
+Action: call, Amount: 10
+"player 2" declared "call:10"
 (6, 16, 16)
 Shape: (6, 16, 16)
 Type: <class 'numpy.ndarray'>
@@ -87,17 +48,333 @@ float64 --> (16, 16)
 float64 --> (16, 16)
 float64 --> (16, 16)
 float64 --> (16, 16)
-Alpha player did raise for amount 66.75
-"player 1" declared "raise:66.75"
-"['player 2']" won the round 1 (stack = {'player 1': 90, 'player 2': 110})
+(6, 16, 16)
+Shape: (6, 16, 16)
+Type: <class 'numpy.ndarray'>
+Dtype: float64
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+Alpha player did fold for amount 0
+emulator output
+[{'round_state': {'action_histories': {'flop': [],
+                                       'preflop': [{'action': 'SMALLBLIND',
+                                                    'add_amount': 5,
+                                                    'amount': 5,
+                                                    'uuid': 'wgyffklekwvjcownzbbixh'},
+                                                   {'action': 'BIGBLIND',
+                                                    'add_amount': 5,
+                                                    'amount': 10,
+                                                    'uuid': 'etqkzbkpwglrqlswarznqk'},
+                                                   {'action': 'CALL',
+                                                    'amount': 10,
+                                                    'paid': 5,
+                                                    'uuid': 'wgyffklekwvjcownzbbixh'},
+                                                   {'action': 'FOLD',
+                                                    'uuid': 'etqkzbkpwglrqlswarznqk'}]},
+                  'big_blind_pos': 0,
+                  'community_card': ['D7', 'S7', 'H5', 'H3', 'H2'],
+                  'dealer_btn': 0,
+                  'next_player': 1,
+                  'pot': {'main': {'amount': 20}, 'side': []},
+                  'round_count': 1,
+                  'seats': [{'name': 'player 1',
+                             'stack': 90,
+                             'state': 'folded',
+                             'uuid': 'etqkzbkpwglrqlswarznqk'},
+                            {'name': 'player 2',
+                             'stack': 110,
+                             'state': 'participating',
+                             'uuid': 'wgyffklekwvjcownzbbixh'}],
+                  'small_blind_amount': 5,
+                  'small_blind_pos': 1,
+                  'street': 'showdown'},
+  'type': 'event_round_finish',
+  'winners': [{'stack': 110, 'uuid': 'wgyffklekwvjcownzbbixh'}]},
+ {'players': [{'stack': 90, 'uuid': 'etqkzbkpwglrqlswarznqk'},
+              {'stack': 110, 'uuid': 'wgyffklekwvjcownzbbixh'}],
+  'type': 'event_game_finish'}]
+suffering:
+own chips: 0
+opponent chips: 10
+alpha player uuid: etqkzbkpwglrqlswarznqk reward: -10
+(6, 16, 16)
+Shape: (6, 16, 16)
+Type: <class 'numpy.ndarray'>
+Dtype: float64
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+Alpha player did raise for amount 20
+"player 1" declared "raise:20"
+valid actions:  [{'action': 'fold', 'amount': 0}, {'action': 'call', 'amount': 20}, {'action': 'raise', 'amount': {'min': 30, 'max': 100}}]
+hole card:  ['SQ', 'S2']
+{'action_histories': {'preflop': [{'action': 'SMALLBLIND',
+                                   'add_amount': 5,
+                                   'amount': 5,
+                                   'uuid': 'wgyffklekwvjcownzbbixh'},
+                                  {'action': 'BIGBLIND',
+                                   'add_amount': 5,
+                                   'amount': 10,
+                                   'uuid': 'etqkzbkpwglrqlswarznqk'},
+                                  {'action': 'CALL',
+                                   'amount': 10,
+                                   'paid': 5,
+                                   'uuid': 'wgyffklekwvjcownzbbixh'},
+                                  {'action': 'RAISE',
+                                   'add_amount': 10,
+                                   'amount': 20,
+                                   'paid': 10,
+                                   'uuid': 'etqkzbkpwglrqlswarznqk'}]},
+ 'big_blind_pos': 0,
+ 'community_card': [],
+ 'dealer_btn': 0,
+ 'next_player': 1,
+ 'pot': {'main': {'amount': 30}, 'side': []},
+ 'round_count': 1,
+ 'seats': [{'name': 'player 1',
+            'stack': 80,
+            'state': 'participating',
+            'uuid': 'etqkzbkpwglrqlswarznqk'},
+           {'name': 'player 2',
+            'stack': 90,
+            'state': 'participating',
+            'uuid': 'wgyffklekwvjcownzbbixh'}],
+ 'small_blind_amount': 5,
+ 'small_blind_pos': 1,
+ 'street': 'preflop'}
+Action: call, Amount: 20
+"player 2" declared "call:20"
+Street "flop" started. (community card = ['DK', 'CQ', 'C3'])
+valid actions:  [{'action': 'fold', 'amount': 0}, {'action': 'call', 'amount': 0}, {'action': 'raise', 'amount': {'min': 10, 'max': 80}}]
+hole card:  ['SQ', 'S2']
+{'action_histories': {'flop': [],
+                      'preflop': [{'action': 'SMALLBLIND',
+                                   'add_amount': 5,
+                                   'amount': 5,
+                                   'uuid': 'wgyffklekwvjcownzbbixh'},
+                                  {'action': 'BIGBLIND',
+                                   'add_amount': 5,
+                                   'amount': 10,
+                                   'uuid': 'etqkzbkpwglrqlswarznqk'},
+                                  {'action': 'CALL',
+                                   'amount': 10,
+                                   'paid': 5,
+                                   'uuid': 'wgyffklekwvjcownzbbixh'},
+                                  {'action': 'RAISE',
+                                   'add_amount': 10,
+                                   'amount': 20,
+                                   'paid': 10,
+                                   'uuid': 'etqkzbkpwglrqlswarznqk'},
+                                  {'action': 'CALL',
+                                   'amount': 20,
+                                   'paid': 10,
+                                   'uuid': 'wgyffklekwvjcownzbbixh'}]},
+ 'big_blind_pos': 0,
+ 'community_card': ['DK', 'CQ', 'C3'],
+ 'dealer_btn': 0,
+ 'next_player': 1,
+ 'pot': {'main': {'amount': 40}, 'side': []},
+ 'round_count': 1,
+ 'seats': [{'name': 'player 1',
+            'stack': 80,
+            'state': 'participating',
+            'uuid': 'etqkzbkpwglrqlswarznqk'},
+           {'name': 'player 2',
+            'stack': 80,
+            'state': 'participating',
+            'uuid': 'wgyffklekwvjcownzbbixh'}],
+ 'small_blind_amount': 5,
+ 'small_blind_pos': 1,
+ 'street': 'flop'}
+Action: call, Amount: 0
+"player 2" declared "call:0"
+(6, 16, 16)
+Shape: (6, 16, 16)
+Type: <class 'numpy.ndarray'>
+Dtype: float64
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+(6, 16, 16)
+Shape: (6, 16, 16)
+Type: <class 'numpy.ndarray'>
+Dtype: float64
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+Alpha player did raise for amount 60.0
+emulator output
+[{'round_state': {'action_histories': {'flop': [{'action': 'CALL',
+                                                 'amount': 0,
+                                                 'paid': 0,
+                                                 'uuid': 'wgyffklekwvjcownzbbixh'},
+                                                {'action': 'RAISE',
+                                                 'add_amount': 60.0,
+                                                 'amount': 60.0,
+                                                 'paid': 60.0,
+                                                 'uuid': 'etqkzbkpwglrqlswarznqk'}],
+                                       'preflop': [{'action': 'SMALLBLIND',
+                                                    'add_amount': 5,
+                                                    'amount': 5,
+                                                    'uuid': 'wgyffklekwvjcownzbbixh'},
+                                                   {'action': 'BIGBLIND',
+                                                    'add_amount': 5,
+                                                    'amount': 10,
+                                                    'uuid': 'etqkzbkpwglrqlswarznqk'},
+                                                   {'action': 'CALL',
+                                                    'amount': 10,
+                                                    'paid': 5,
+                                                    'uuid': 'wgyffklekwvjcownzbbixh'},
+                                                   {'action': 'RAISE',
+                                                    'add_amount': 10,
+                                                    'amount': 20,
+                                                    'paid': 10,
+                                                    'uuid': 'etqkzbkpwglrqlswarznqk'},
+                                                   {'action': 'CALL',
+                                                    'amount': 20,
+                                                    'paid': 10,
+                                                    'uuid': 'wgyffklekwvjcownzbbixh'}]},
+                  'big_blind_pos': 0,
+                  'community_card': ['DK', 'CQ', 'C3'],
+                  'dealer_btn': 0,
+                  'next_player': 1,
+                  'pot': {'main': {'amount': 100.0}, 'side': []},
+                  'round_count': 1,
+                  'seats': [{'name': 'player 1',
+                             'stack': 20.0,
+                             'state': 'participating',
+                             'uuid': 'etqkzbkpwglrqlswarznqk'},
+                            {'name': 'player 2',
+                             'stack': 80,
+                             'state': 'participating',
+                             'uuid': 'wgyffklekwvjcownzbbixh'}],
+                  'small_blind_amount': 5,
+                  'small_blind_pos': 1,
+                  'street': 'flop'},
+  'type': 'event_ask_player',
+  'uuid': 'wgyffklekwvjcownzbbixh',
+  'valid_actions': [{'action': 'fold', 'amount': 0},
+                    {'action': 'call', 'amount': 60.0},
+                    {'action': 'raise', 'amount': {'max': -1, 'min': -1}}]}]
+suffering:
+own chips: 80.0
+opponent chips: 20
+alpha player uuid: etqkzbkpwglrqlswarznqk reward: 0
+(6, 16, 16)
+Shape: (6, 16, 16)
+Type: <class 'numpy.ndarray'>
+Dtype: float64
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+(6, 16, 16)
+Shape: (6, 16, 16)
+Type: <class 'numpy.ndarray'>
+Dtype: float64
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+Alpha player did raise for amount 20.0
+emulator output
+[{'round_state': {'action_histories': {'flop': [{'action': 'CALL',
+                                                 'amount': 0,
+                                                 'paid': 0,
+                                                 'uuid': 'wgyffklekwvjcownzbbixh'},
+                                                {'action': 'RAISE',
+                                                 'add_amount': 60.0,
+                                                 'amount': 60.0,
+                                                 'paid': 60.0,
+                                                 'uuid': 'etqkzbkpwglrqlswarznqk'},
+                                                {'action': 'FOLD',
+                                                 'uuid': 'wgyffklekwvjcownzbbixh'}],
+                                       'preflop': [{'action': 'SMALLBLIND',
+                                                    'add_amount': 5,
+                                                    'amount': 5,
+                                                    'uuid': 'wgyffklekwvjcownzbbixh'},
+                                                   {'action': 'BIGBLIND',
+                                                    'add_amount': 5,
+                                                    'amount': 10,
+                                                    'uuid': 'etqkzbkpwglrqlswarznqk'},
+                                                   {'action': 'CALL',
+                                                    'amount': 10,
+                                                    'paid': 5,
+                                                    'uuid': 'wgyffklekwvjcownzbbixh'},
+                                                   {'action': 'RAISE',
+                                                    'add_amount': 10,
+                                                    'amount': 20,
+                                                    'paid': 10,
+                                                    'uuid': 'etqkzbkpwglrqlswarznqk'},
+                                                   {'action': 'CALL',
+                                                    'amount': 20,
+                                                    'paid': 10,
+                                                    'uuid': 'wgyffklekwvjcownzbbixh'}],
+                                       'turn': []},
+                  'big_blind_pos': 0,
+                  'community_card': ['DK', 'CQ', 'C3', 'C9', 'D4'],
+                  'dealer_btn': 0,
+                  'next_player': 0,
+                  'pot': {'main': {'amount': 100.0}, 'side': []},
+                  'round_count': 1,
+                  'seats': [{'name': 'player 1',
+                             'stack': 120.0,
+                             'state': 'participating',
+                             'uuid': 'etqkzbkpwglrqlswarznqk'},
+                            {'name': 'player 2',
+                             'stack': 80,
+                             'state': 'folded',
+                             'uuid': 'wgyffklekwvjcownzbbixh'}],
+                  'small_blind_amount': 5,
+                  'small_blind_pos': 1,
+                  'street': 'showdown'},
+  'type': 'event_round_finish',
+  'winners': [{'stack': 120.0, 'uuid': 'etqkzbkpwglrqlswarznqk'}]},
+ {'players': [{'stack': 120.0, 'uuid': 'etqkzbkpwglrqlswarznqk'},
+              {'stack': 80, 'uuid': 'wgyffklekwvjcownzbbixh'}],
+  'type': 'event_game_finish'}]
+suffering:
+own chips: 20
+opponent chips: 80.0
+alpha player uuid: etqkzbkpwglrqlswarznqk reward: 20.0
+(6, 16, 16)
+Shape: (6, 16, 16)
+Type: <class 'numpy.ndarray'>
+Dtype: float64
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+float64 --> (16, 16)
+Alpha player did raise for amount 200.0
+"player 1" declared "raise:200.0"
+"['player 2']" won the round 1 (stack = {'player 1': 80, 'player 2': 120})
 {'players': [{'name': 'player 1',
-              'stack': 90,
+              'stack': 80,
               'state': 'participating',
-              'uuid': 'uoxsvnvtukqxbnbcdouzjo'},
+              'uuid': 'etqkzbkpwglrqlswarznqk'},
              {'name': 'player 2',
-              'stack': 110,
+              'stack': 120,
               'state': 'participating',
-              'uuid': 'jkngtwvrcbmfcgshpfrfat'}],
+              'uuid': 'wgyffklekwvjcownzbbixh'}],
  'rule': {'ante': 0,
           'blind_structure': {},
           'initial_stack': 100,

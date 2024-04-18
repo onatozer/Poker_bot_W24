@@ -5,8 +5,11 @@ import numpy as np
 from pypokerengine.api.emulator import Emulator
 from pypokerengine.utils.card_utils import gen_cards
 from pypokerengine.utils.game_state_utils import restore_game_state, attach_hole_card, attach_hole_card_from_deck
+import torch
 from torch.distributions.categorical import Categorical
 from cartpole_ppo_follow import PPOTrainer, calculate_gae, discount_rewards
+
+DEVICE = 'cpu'
 
 class AlphaPlayer(BasePokerPlayer):
     def __init__(self, name = "player 1", is_training = False):
@@ -68,19 +71,23 @@ class AlphaPlayer(BasePokerPlayer):
         loop_valid_actions = valid_actions
 
         if(self.is_training):
-            trainer = PPOTrainer(policy_network = self.policy, critic_network = self.critic)
+            trainer = PPOTrainer(policy_network = self.policy, critic_network = self.critic, max_policy_train_iters= 0)
             train_data = [[], [], [], []] # obs, act, values, act_log_probs
         #     # obs = env.reset()
 
             ep_reward = 0
             done = False
             obs = (self.encodings_zero_pad, self.card_state)
+            
             while(not done):
-                policy_output = self.policy.forward(game_state=self.encodings_zero_pad,
-                                    card_state=self.card_state)
+                own_chips = 0
+                opponent_chips = 0
+
+                policy_output = self.policy.forward(game_state = obs[0],
+                                    card_state = obs[1])
                         
-                critic_output = self.critic.forward(game_state=self.encodings_zero_pad,
-                                    card_state=self.card_state)
+                critic_output = self.critic.forward(game_state = obs[0],
+                                    card_state = obs[1])
                 
                 
                 logits = policy_output
@@ -90,13 +97,14 @@ class AlphaPlayer(BasePokerPlayer):
                 act_log_prob = act_distribution.log_prob(act)
 
                 val = critic_output.item()
+                act = act.item()
 
-                action, amount = self.convert_output_into_action(act.item(),loop_valid_actions,loop_pot)
+                action, amount = self.convert_output_into_action(act,loop_valid_actions,loop_pot)
 
                 print("emulator output")
 
                 next_turn_state, events = self.emulator.apply_action(current_state,action,amount)
-                pp.pprint(next_turn_state)
+                # pp.pprint(next_turn_state)
                 pp.pprint((events))
 
                 #pypoker is lowkey aids
@@ -110,13 +118,57 @@ class AlphaPlayer(BasePokerPlayer):
                     if event['type'] == 'event_round_finish':
                         done = True
 
+                #get most recent event
+                event_indx = -2
                 if(not done):
-                    #get most recent event
-                    round_state = events[-1]['round_state']
-                    valid_actions = events[-1]['valid_actions']
+                    event_indx = -1
+                    valid_actions = events[event_indx]['valid_actions']
+
+                round_state = events[event_indx]['round_state']
+                
+
+                #What the fuck is this garbage -> it works though :-)
+                print('suffering:')
+
+                for stage in events[event_indx]['round_state']['action_histories']:
+                    #because pypoker sometimes decides to create empty turn list
+                    if(len(events[event_indx]['round_state']['action_histories'][stage]) == 0):
+                        continue
+                    # print(events[-1]['round_state']['action_histories'][stage][-1])
+                    if(events[event_indx]['round_state']['action_histories'][stage][-1]['uuid'] == self.uuid):
+                        #to handle folds
+                        try:
+                            own_chips += events[event_indx]['round_state']['action_histories'][stage][-1]['amount']
+                        except:
+                            try:
+                                own_chips += events[event_indx]['round_state']['action_histories'][stage][-3]['amount']
+                            except:
+                                own_chips += 0
+                            
+                        try:
+                            opponent_chips += events[event_indx]['round_state']['action_histories'][stage][-2]['amount']
+                        except:
+                            print("exception")
+                            opponent_chips += events[event_indx]['round_state']['action_histories'][stage][-4]['amount']
+                        
+                    else:
+                        try:
+                            own_chips += events[event_indx]['round_state']['action_histories'][stage][-1]['amount']
+                        except:
+                            own_chips += 0
+
+                        try:
+                            opponent_chips += events[event_indx]['round_state']['action_histories'][stage][-2]['amount']
+                        except:
+                            print("exception")
+                            opponent_chips += 0
+
+                print(f"own chips: {own_chips}")
+                print(f"opponent chips: {opponent_chips}")
+                print(f"alpha player uuid: {self.uuid} reward: {reward}")
 
                     #next_obs = (card state, game state)
-                next_obs = (self.update_card_state(hole_card,round_state), self.encode_game(valid_actions,round_state))
+                next_obs = (self.encode_game(valid_actions,round_state), self.update_card_state(hole_card,round_state))
         #         next_obs, reward, done, _ = env.step(act)
 
                 
@@ -126,28 +178,42 @@ class AlphaPlayer(BasePokerPlayer):
                     train_data[i].append(item)
 
                 obs = next_obs
-                print("observation")
-                print(obs)
                 ep_reward += reward
-                if done:
-                    break
+                current_state = next_turn_state
 
-            print("Train data")
-            print(train_data)
+            # print("Train data")
+            # print(train_data)
 
             gae_rewards = calculate_gae(ep_reward,train_data[2])
 
             #TODO: update model parameters:
-            print("Gay:")
-            print(gae_rewards)
+            # print("Gay:")
+            # print(gae_rewards)
 
-            print("thomas")
+            # print("thomas")
             # print(train_data[0])
 
             for i, item in enumerate(train_data[0]):
-                # (train_data[0][i], train_data[1][i], train_data[3[i]], gae_rewards[i]])
+
+                #Format train data into tensor objects so that ppotrainer can properly train on it 
+                #Policy data
+                #obs_tensor = torch.tensor(train_data[0][i],
+                #                     dtype=torch.float32, device=DEVICE)
+                acts_tensor = torch.tensor(train_data[1][i],
+                                    dtype=torch.int32, device=DEVICE)
+                gaes_tensor = torch.tensor(gae_rewards[i],
+                                    dtype=torch.float32, device=DEVICE)
+                act_log_probs = train_data[3][i].clone().detach().to(DEVICE)
+
+                # # Value data
+                # returns = discount_rewards(train_data[2])[permute_idxs]
+                # returns = torch.tensor(returns, dtype=torch.float32, device=DEVICE)
+
+
                 # print(f"obs: {train_data[0][i]}, action {train_data[1][i]}, log probs {train_data[3][i]}")
-                trainer.train_policy(train_data[0][i], train_data[1][i], train_data[3][i], gae_rewards[i])
+                # print(f"obs game state size: {train_data[0][i][0].shape} \nobs card state size: {train_data[0][i][1].shape}")
+
+                trainer.train_policy(train_data[0][i], acts_tensor, act_log_probs, gaes_tensor)
                 # trainer.train_value(train_data[0][i], train_data[1[i], train_data[3[i]], gae_rewards[i]])
 
       
@@ -271,8 +337,11 @@ class AlphaPlayer(BasePokerPlayer):
         # self.update_card_state()
         pass
 
+
+    #TODO: Tweak this function for
     def update_card_state(self, hole_card, round_state):
-        card_state = self.card_state
+        # card_state = self.card_state
+        card_state = np.zeros((6, 16, 16))
         # update hole cards
         if not self.hole_card_updated:
             card_state[0, ...] = self.encode_card(hole_card)
@@ -348,7 +417,7 @@ class AlphaPlayer(BasePokerPlayer):
         # p1_uid_to_idx = {}
         # p2_uid_to_idx = {}
 
-        print("Action histories")
+        # print("Action histories")
         # NOTE: Not the most efficient way to implement this functionality, don't care right now
         for pftr in round_state['action_histories']:
             if (pftr == "preflop"):
@@ -450,7 +519,7 @@ class AlphaPlayer(BasePokerPlayer):
 
     def convert_output_into_action(self,output, valid_actions, pot_amount):
         #amount you're allowed to call is always in 2nd value of valid actions
-        print("output")
+        # print("output")
         
         # print(act)
 
